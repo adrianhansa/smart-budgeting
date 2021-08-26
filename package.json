@@ -1,0 +1,28 @@
+{
+  "name": "smart-budgeting",
+  "version": "1.0.0",
+  "description": "An application for smart budgeting, designed to help you managing your money and encourage savings",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianhansa/smart-budgeting.git"
+  },
+  "keywords": [
+    "budget",
+    "money",
+    "savings",
+    "income",
+    "expenses",
+    "budgeting",
+    "smart budgeting"
+  ],
+  "author": "Adrian Hansa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adrianhansa/smart-budgeting/issues"
+  },
+  "homepage": ""
+}
