@@ -8,7 +8,7 @@ const createExpense = async (req,res)=>{
         if(!account) return res.status(400).json({message:"Please select an account."})
         const description = req.body.description
         if(!description) return res.status(400).json({message:"Please enter a description."})
-        const expense = await Expense.create({user:req.user,account,amount,description,date:Date.now()})
+        const expense = await Expense.create({user:req.user,account,amount,description,date:Date.now(),month:new Date().getMonth()+1,year:new Date().getFullYear()})
         res.status(200).json(expense)
     }catch(error){
         return res.status(500).json({message:error.message})
@@ -34,11 +34,34 @@ const getExpenses = async (req,res)=>{
     }
 }
 
+const getExpensesByMonthAndYear = async (req,res)=>{
+    try{
+        const {month, year} = req.params
+        if(!month || !year) return res.status(400).json({message:"Please select both the month and the year."})
+        const expenses = await Expense.find({user:req.user}).where('year').equals(year).where('month').equals(month).populate('account','name')
+        res.status(200).json(expenses)
+    }catch(error){
+        return res.status(500).json({message:error.message})
+    }
+}
+
+const getExpensesByAccount = async (req,res)=>{
+    try{
+        const {account} = req.body
+        if(!account) return res.status(400).json({message:"Please select the account."})
+        const expenses = await Expense.find({user:req.user,account})
+        res.status(200).json(expenses)
+    }catch(error){
+        return res.status(500).json({message:error.message})
+    }
+}
+
 const updateExpense = async (req,res)=>{
     try{
         const {amount,description,date,account} = req.body
-        if(!amount || !description || !date || !account) return res.status(400).json({message:"Please complete all fields."})
-        const expense = await Expense.findByIdAndUpdate(req.params.id,{amount:Number(amount),description,date,account},{new:true})
+        //include date in the if below
+        if(!amount || !description || !account) return res.status(400).json({message:"Please complete all fields."})
+        const expense = await Expense.findByIdAndUpdate(req.params.id,{amount:Number(amount),description,date:Date.now(),account,month:new Date().getMonth()+1,year:new Date().getFullYear()},{new:true})
         res.status(200).json(expense)
     }catch(error){
         return res.status(500).json({message:error.message})
@@ -55,4 +78,4 @@ const deleteExpense = async (req,res)=>{
     }
 }
 
-module.exports = {createExpense, updateExpense, deleteExpense, getExpense, getExpenses}
+module.exports = {createExpense, updateExpense, deleteExpense, getExpense, getExpenses, getExpensesByAccount, getExpensesByMonthAndYear}
