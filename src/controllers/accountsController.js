@@ -6,7 +6,7 @@ const createAccount = async (req,res)=>{
         const {name}= req.body
         if(!name) return res.status(400).json({message:"Account name is required."})
         const slug = slugify(name, {lower:true,remove: /[*+~.()'"!?:@]/g})
-        const existingAccount = await Account.findOne({slug})
+        const existingAccount = await Account.findOne({slug,user:req.user})
         if(existingAccount) return res.status(400).json({message:"This account already exists. Please create a different one."})
         const account = await Account.create({name,slug,user:req.user})
         res.status(200).json(account)
@@ -40,8 +40,6 @@ const updateAccount = async (req,res)=>{
         const {name} = req.body
         if(!name) return res.status(400).json({name:"Name must be provided."})
         //check if new name is different from existing one providing the initial slug
-        console.log(req.user)
-        console.log(req.params.slug)
         const existingAccount = await Account.findOne({user:req.user,slug:req.params.slug})
         if(existingAccount.name === name) return res.status(200).json({account:existingAccount})
         const newSlug = slugify(name, {lower:true,remove: /[*+~.()'"!?:@]/g})
