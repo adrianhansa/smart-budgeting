@@ -45,7 +45,7 @@ const login = async (req, res) => {
 };
 
 const logout = async (req,res)=>{
-    //
+    res.status(200).header('token',null).json({isAuth:false})
 }
 
 const resetPassword = async (req, res) => {
