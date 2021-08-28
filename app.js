@@ -17,6 +17,9 @@ app.use("/accounts", accountRoutes)
 const expenseRoutes = require('./src/routes/expenseRoutes')
 app.use('/expenses', expenseRoutes)
 
+const budgetLimits = require('./src/routes/budgetLimitsRoutes')
+app.use('/budget-limits',budgetLimits)
+
 const PORT = process.env.PORT || 5000
 
 mongoose.connect(process.env.DB_CONNECTION).then(()=>{
