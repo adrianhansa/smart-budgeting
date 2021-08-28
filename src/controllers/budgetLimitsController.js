@@ -1,13 +1,16 @@
 const BudgetLimit = require('../models/BudgetLimit')
+const Account = require('../models/Account')
 const validator = require('validator')
 
 const createBudgetLimit = async (req,res)=>{
     try{
+        const account = await Account.findOne({user:req.user,slug:req.params.account})
+        if(!account) return res.status(404).json({message:"Accoiunt not found."})
         const {limit, month, year} = req.body
         if(!limit || !validator.isNumeric(limit)){
             return res.status(400).json({message:"This limit is required and it has to contain a positive number"})
         }
-        const budgetLimit = await BudgetLimit.create({limit, user:req.user, account:req.params.account, month, year})
+        const budgetLimit = await BudgetLimit.create({limit, user:req.user, account:account._id, month, year})
         if(!budgetLimit) return res.status(400).json({message:"Budget limit for this account could not be created."})
         res.status(200).json(budgetLimit)
     }catch(error){
