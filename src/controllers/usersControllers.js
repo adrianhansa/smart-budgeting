@@ -17,11 +17,9 @@ const register = async (req, res) => {
         .json({ message: "The two passwords do not match" });
     const existingUser = await User.findOne({ email });
     if (existingUser)
-      return rees
-        .status(400)
-        .json({
-          message: "This email has already been registered. Please login.",
-        });
+      return res.status(400).json({
+        message: "This email has already been registered. Please login.",
+      });
     const passwordHashed = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: passwordHashed });
     sendToken(user, 200, res);
@@ -33,20 +31,25 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if(!email || !password) return res.status(400).json({message:"Both fields are required."})
-    const user = await User.findOne({email})
-    if(!user) return res.status(404).json({message:"This user does not exist"})
-    const passwordVerified = await bcrypt.compare(password,user.password)
-    if(!passwordVerified) return res.status(400).json({mesdsage:"Invalid email/password combination."})
-    sendToken(user,200,res)
+    if (!email || !password)
+      return res.status(400).json({ message: "Both fields are required." });
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: "This user does not exist" });
+    const passwordVerified = await bcrypt.compare(password, user.password);
+    if (!passwordVerified)
+      return res
+        .status(400)
+        .json({ mesdsage: "Invalid email/password combination." });
+    sendToken(user, 200, res);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const logout = async (req,res)=>{
-    res.status(200).header('token',null).json({isAuth:false})
-}
+const logout = async (req, res) => {
+  res.status(200).header("token", null).json({ isAuth: false });
+};
 
 const resetPassword = async (req, res) => {
   try {
