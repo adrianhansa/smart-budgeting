@@ -4,7 +4,7 @@ const sendToken = require("../utils/sendToken");
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, passwordVerify } = req.body;
+    const { household, name, email, password, passwordVerify } = req.body;
     if (!name || !email || !password)
       return res.status(400).json({ message: "All fields are required" });
     if (password.length < 6)
@@ -20,8 +20,12 @@ const register = async (req, res) => {
       return res.status(400).json({
         message: "This email has already been registered. Please login.",
       });
-    const passwordHashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: passwordHashed });
+    const user = await User.create({
+      household,
+      name,
+      email,
+      password,
+    });
     sendToken(user, 200, res);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -36,19 +40,18 @@ const login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user)
       return res.status(404).json({ message: "This user does not exist" });
-    const passwordVerified = await bcrypt.compare(password, user.password);
-    if (!passwordVerified)
-      return res
-        .status(400)
-        .json({ mesdsage: "Invalid email/password combination." });
-    sendToken(user, 200, res);
+    if (user && (await user.matchPassword(password))) {
+      sendToken(user, 200, res);
+    } else {
+      return res.status(401).json({ message: "Invalid email/password." });
+    }
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
 const logout = async (req, res) => {
-  res.status(200).header("token", null).json({ isAuth: false });
+  res.status(200).clearCookie("token").send();
 };
 
 const resetPassword = async (req, res) => {
