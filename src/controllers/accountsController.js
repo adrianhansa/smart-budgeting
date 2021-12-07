@@ -7,15 +7,19 @@ const createAccount = async (req, res) => {
     if (!name)
       return res.status(400).json({ message: "Account name is required." });
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!?:@]/g });
-    const existingAccount = await Account.findOne({ slug, user: req.user });
+    const existingAccount = await Account.findOne({
+      slug,
+      household: req.user.household._id,
+    });
     if (existingAccount)
-      return res
-        .status(400)
-        .json({
-          message:
-            "This account already exists. Please create a different one.",
-        });
-    const account = await Account.create({ name, slug, user: req.user });
+      return res.status(400).json({
+        message: "This account already exists. Please create a different one.",
+      });
+    const account = await Account.create({
+      name,
+      slug,
+      household: req.user.household._id,
+    });
     res.status(200).json(account);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -24,7 +28,9 @@ const createAccount = async (req, res) => {
 
 const getAccounts = async (req, res) => {
   try {
-    const accounts = await Account.find({ user: req.user });
+    const accounts = await Account.find({
+      household: req.user.household._id,
+    }).populate("household");
     res.status(200).json(accounts);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -34,9 +40,9 @@ const getAccounts = async (req, res) => {
 const getAccount = async (req, res) => {
   try {
     const account = await Account.findOne({
-      user: req.user,
+      household: req.user.household._id,
       slug: req.params.slug,
-    });
+    }).populate("household");
     if (!account)
       return res.status(404).json({ message: "Account not found." });
     res.status(200).json(account);
@@ -51,7 +57,7 @@ const updateAccount = async (req, res) => {
     if (!name) return res.status(400).json({ name: "Name must be provided." });
     //check if new name is different from existing one providing the initial slug
     const existingAccount = await Account.findOne({
-      user: req.user,
+      household: req.user.household._id,
       slug: req.params.slug,
     });
     if (existingAccount.name === name)
@@ -59,20 +65,18 @@ const updateAccount = async (req, res) => {
     const newSlug = slugify(name, { lower: true, remove: /[*+~.()'"!?:@]/g });
     //check if the new name exists in the database for this user
     const existingName = await Account.findOne({
-      user: req.user,
+      household: req.user.household._id,
       slug: newSlug,
     });
     if (existingName)
-      return res
-        .status(400)
-        .json({
-          message: "You have already created an account with this name.",
-        });
+      return res.status(400).json({
+        message: "You have already created an account with this name.",
+      });
     const account = await Account.findOneAndUpdate(
-      { user: req.user, slug: existingAccount.slug },
+      { household: req.user.household._id, slug: existingAccount.slug },
       { name, slug: newSlug },
       { new: true }
-    );
+    ).populate("household");
     res.status(200).json(account);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -82,7 +86,7 @@ const updateAccount = async (req, res) => {
 const deleteAccount = async (req, res) => {
   try {
     const account = await Account.findOneAndDelete({
-      user: req.user,
+      household: req.user.household._id,
       slug: req.params.slug,
     });
     if (!account)
