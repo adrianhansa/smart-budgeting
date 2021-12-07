@@ -1,9 +1,18 @@
-const router = require('express').Router()
-const {register,login,deleteAccount,logout} = require('../controllers/usersControllers')
+const router = require("express").Router();
+const {
+  register,
+  login,
+  deleteAccount,
+  logout,
+  addUser,
+} = require("../controllers/usersControllers");
 
-router.post('/register',register)
-router.post('/login',login)
-router.delete('/delete-account',deleteAccount)
-router.get('/logout',logout)
+const auth = require("../middlewares/auth");
 
-module.exports = router
+router.post("/register", register);
+router.post("/login", login);
+router.post("/add-user", auth, addUser);
+router.delete("/delete-account", deleteAccount);
+router.get("/logout", logout);
+
+module.exports = router;

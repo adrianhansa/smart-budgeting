@@ -11,9 +11,10 @@ const sendToken = (user, statusCode, res) => {
     },
     process.env.JWT_SECRET
   );
-  res.status(statusCode).cookies("token", token, { httpOnly: true }).json({
+  res.status(statusCode).cookie("token", token, { httpOnly: true }).json({
     name: user.name,
     isAdmin: user.isAdmin,
+    email: user.email,
     household: user.household,
   });
 };
