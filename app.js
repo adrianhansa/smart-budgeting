@@ -9,7 +9,12 @@ const app = express();
 app.use(cookieParser());
 
 app.use(express.json());
-app.use(cors({ origin: ["http://localhost:3000", "http://localhost:19006/"] }));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:5000/"],
+    credentials: true,
+  })
+);
 
 const userRoutes = require("./src/routes/userRoutes");
 app.use("/", userRoutes);
