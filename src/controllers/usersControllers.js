@@ -73,6 +73,21 @@ const addUser = async (req, res) => {
   }
 };
 
+const getUsers = async (req, res) => {
+  try {
+    if (req.user.isAdmin) {
+      const users = await User.find({ household: req.user.household._id });
+      res.status(200).json({ users });
+    } else {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to perform his operation." });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const deleteAccount = async (req, res) => {
   try {
     //delete self account
@@ -140,4 +155,5 @@ module.exports = {
   logout,
   addUser,
   deleteUser,
+  getUsers,
 };
