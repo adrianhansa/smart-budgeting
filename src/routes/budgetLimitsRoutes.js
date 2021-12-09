@@ -9,9 +9,9 @@ const {
 const auth = require("../middlewares/auth");
 
 router.get("/", auth, getBudgetLimits);
-router.post("/:account", auth, createBudgetLimit);
-router.get("/:account/:id", auth, getBudgetLimit);
-router.put("/:account/:id", auth, updateBudgetLimit);
-router.delete("/:account/:id", auth, deleteBudgetLimit);
+router.post("/", auth, createBudgetLimit);
+router.get("/:id", auth, getBudgetLimit);
+router.put("/:id", auth, updateBudgetLimit);
+router.delete("/:id", auth, deleteBudgetLimit);
 
 module.exports = router;
