@@ -36,7 +36,9 @@ const createBudgetLimit = async (req, res) => {
 
 const getBudgetLimit = async (req, res) => {
   try {
-    const budgetLimit = await BudgetLimit.findById(req.params.id);
+    const budgetLimit = await BudgetLimit.findById(req.params.id).populate(
+      "account"
+    );
     if (!budgetLimit)
       return res.status(404).json({ message: "Record not found." });
     res.status(200).json(budgetLimit);
@@ -49,7 +51,7 @@ const getBudgetLimits = async (req, res) => {
   try {
     const budgetLimits = await BudgetLimit.find({
       household: req.user.household._id,
-    });
+    }).populate("account");
     res.status(200).json(budgetLimits);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -59,7 +61,7 @@ const getBudgetLimits = async (req, res) => {
 const updateBudgetLimit = async (req, res) => {
   try {
     const { limit } = req.body;
-    if (!validator.isNumeric(limit) || limit >= 0) {
+    if (limit >= 0) {
       return res.status(400).json({
         message:
           "The budget amount has to be a number equal or greater than 0.",
@@ -70,7 +72,7 @@ const updateBudgetLimit = async (req, res) => {
         req.params.id,
         { limit },
         { new: true }
-      );
+      ).populate("account");
       res.status(200).json(budgetLimit);
     } else {
       return res
