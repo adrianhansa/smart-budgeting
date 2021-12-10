@@ -49,8 +49,18 @@ const getBudgetLimit = async (req, res) => {
 
 const getBudgetLimits = async (req, res) => {
   try {
+    const month = Number(req.params.month);
+    const year = Number(req.params.year);
+    if (!month || !year) {
+      return res.status(400).json({
+        message:
+          "Please provide the month and the year in order to get the budget limits.",
+      });
+    }
     const budgetLimits = await BudgetLimit.find({
       household: req.user.household._id,
+      month,
+      year,
     }).populate("account");
     res.status(200).json(budgetLimits);
   } catch (error) {

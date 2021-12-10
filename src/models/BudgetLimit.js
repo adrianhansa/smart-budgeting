@@ -11,8 +11,8 @@ const budgetLimitSchema = new mongoose.Schema({
     required: true,
     ref: "household",
   },
-  month: { type: String, required: true },
-  year: { type: String },
+  month: { type: Number, required: true },
+  year: { type: Number },
   limit: { type: Number, required: true, default: 0.0 },
 });
 
