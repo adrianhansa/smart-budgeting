@@ -1,27 +1,21 @@
 const BudgetLimit = require("../models/BudgetLimit");
-const Account = require("../models/Account");
-const validator = require("validator");
 
 const createBudgetLimit = async (req, res) => {
   try {
-    const account = await Account.findOne({
-      household: req.user.household._id,
-      slug: req.params.account,
-    });
-    if (!account)
-      return res.status(404).json({ message: "Account not found." });
-    const { limit, month, year } = req.body;
-    if (!limit || !validator.isNumeric(limit)) {
+    const { limit, month, year, account } = req.body;
+
+    if (!limit) {
       return res.status(400).json({
         message:
           "This limit is required and it has to contain a positive number",
       });
     }
+
     if (req.user.isAdmin) {
       const budgetLimit = await BudgetLimit.create({
         limit,
         household: req.user.household._id,
-        account: account._id,
+        account,
         month,
         year,
       });
@@ -54,7 +48,7 @@ const getBudgetLimit = async (req, res) => {
 const getBudgetLimits = async (req, res) => {
   try {
     const budgetLimits = await BudgetLimit.find({
-      household: req.user.houshold._id,
+      household: req.user.household._id,
     });
     res.status(200).json(budgetLimits);
   } catch (error) {
