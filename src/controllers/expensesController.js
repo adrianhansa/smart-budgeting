@@ -19,14 +19,14 @@ const createExpense = async (req, res) => {
     if (!date)
       return res.status(400).json({ message: "Please select a date." });
     const expense = await Expense.create({
-      user: req.user._id,
+      user: req.user.id,
       household: req.user.household._id,
       account,
       amount,
       description,
       date,
-      month: date.getMonth() + 1,
-      year: date.getFullYear(),
+      month: date.split("-")[1],
+      year: date.split("-")[0],
     });
     res.status(200).json(expense);
   } catch (error) {
@@ -96,7 +96,6 @@ const getExpensesByAccount = async (req, res) => {
 const updateExpense = async (req, res) => {
   try {
     const { amount, description, date, account } = req.body;
-    //include date in the if below
     if (!amount || !description || !account || !date)
       return res.status(400).json({ message: "Please complete all fields." });
     if (amount < 0)
@@ -110,8 +109,8 @@ const updateExpense = async (req, res) => {
         description,
         date: date,
         account,
-        month: date.getMonth() + 1,
-        year: date.getFullYear(),
+        month: date.split("-")[1],
+        year: date.split("-")[0],
       },
       { new: true }
     );
