@@ -3,11 +3,15 @@ const Account = require("../models/Account");
 const createAccount = async (req, res) => {
   try {
     const name = req.body.name;
-    let limit;
-    if (!req.body.limit) {
-      limit = 0.0;
+    let budget;
+    if (!req.body.budget) {
+      budget = 0.0;
     } else {
-      limit = Number(req.body.limit);
+      budget = Number(req.body.budget);
+      if (budget < 0)
+        return res
+          .status(400)
+          .json({ message: "The budget limit cannot be less than zero." });
     }
     if (!name)
       return res
@@ -23,7 +27,7 @@ const createAccount = async (req, res) => {
       });
     const account = await Account.create({
       name,
-      limit,
+      budget,
       household: req.user.household._id,
     });
     res.status(200).json(account);
@@ -57,11 +61,15 @@ const getAccount = async (req, res) => {
 const updateAccount = async (req, res) => {
   try {
     const name = req.body.name;
-    let limit;
-    if (!req.body.limit) {
-      limit = 0.0;
+    let budget;
+    if (!req.body.budget) {
+      budget = 0.0;
     } else {
-      limit = Number(req.body.limit);
+      budget = Number(req.body.budget);
+      if (budget < 0)
+        return res
+          .status(400)
+          .json({ message: "The budget limit cannot be less than zero." });
     }
     if (!name)
       return res
@@ -69,7 +77,7 @@ const updateAccount = async (req, res) => {
         .json({ message: "Please provide a name for this account." });
     const account = await Account.findByIdAndUpdate(
       req.params.id,
-      { name, limit },
+      { name, budget },
       { new: true }
     ).populate("household");
     res.status(200).json(account);
