@@ -1,6 +1,6 @@
-const Expense = require("../models/Expense");
+const Income = require("../models/Expense");
 
-const createExpense = async (req, res) => {
+const createIncome = async (req, res) => {
   try {
     const amount = Number(req.body.amount);
     if (amount < 0)
@@ -9,56 +9,52 @@ const createExpense = async (req, res) => {
         .json({ message: "The amount spent cannot be less than zero." });
     if (!amount)
       return res.status(400).json({ message: "Amount spent is required." });
-    const account = req.body.account;
-    if (!account)
-      return res.status(400).json({ message: "Please select an account." });
     const description = req.body.description;
     if (!description)
       return res.status(400).json({ message: "Please enter a description." });
     const date = req.body.date;
     if (!date)
       return res.status(400).json({ message: "Please select a date." });
-    const expense = await Expense.create({
+    const income = await Income.create({
       user: req.user.id,
       household: req.user.household._id,
-      account,
       amount,
       description,
       date,
       month: date.split("-")[1],
       year: date.split("-")[0],
     });
-    res.status(200).json(expense);
+    res.status(200).json(income);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const getExpense = async (req, res) => {
+const getIncome = async (req, res) => {
   try {
-    const expense = await Expense.findById(req.params.id).populate(
+    const income = await Income.findById(req.params.id).populate(
       "account",
       "name"
     );
-    if (!expense) return res.status(404).json({ message: "Expense not found" });
-    res.status(200).json(expense);
+    if (!income) return res.status(404).json({ message: "Expense not found" });
+    res.status(200).json(income);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const getExpenses = async (req, res) => {
+const getIncomes = async (req, res) => {
   try {
-    const expenses = await Expense.find({ household: req.user.household._id })
+    const incomes = await Income.find({ household: req.user.household._id })
       .populate("account")
       .populate("user", "name");
-    res.status(200).json(expenses);
+    res.status(200).json(incomes);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const getExpensesByMonthAndYear = async (req, res) => {
+const getIncomesByMonthAndYear = async (req, res) => {
   try {
     const month = Number(req.params.month);
     const year = Number(req.params.year);
@@ -66,34 +62,34 @@ const getExpensesByMonthAndYear = async (req, res) => {
       return res
         .status(400)
         .json({ message: "Please select both the month and the year." });
-    const expenses = await Expense.find({ household: req.user.household._id })
+    const incomes = await Income.find({ household: req.user.household._id })
       .where("year")
       .equals(year)
       .where("month")
       .equals(month)
       .populate("account", ["name", "budget"])
       .populate("user", "name");
-    res.status(200).json(expenses);
+    res.status(200).json(incomes);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const getExpensesByAccount = async (req, res) => {
+const getIncomesByAccount = async (req, res) => {
   try {
     if (!req.params.account)
       return res.status(400).json({ message: "Please select the account." });
-    const expenses = await Expense.find({
+    const incomes = await Income.find({
       household: req.user.household._id,
       account: req.params.account,
     });
-    res.status(200).json(expenses);
+    res.status(200).json(incomes);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const updateExpense = async (req, res) => {
+const updateIncome = async (req, res) => {
   try {
     const { amount, description, date, account } = req.body;
     if (!amount || !description || !account || !date)
@@ -102,28 +98,27 @@ const updateExpense = async (req, res) => {
       return res
         .status(400)
         .json({ message: "The amount spent cannot be less than zero." });
-    const expense = await Expense.findByIdAndUpdate(
+    const income = await Income.findByIdAndUpdate(
       req.params.id,
       {
         amount: Number(amount),
         description,
         date: date,
-        account,
         month: date.split("-")[1],
         year: date.split("-")[0],
       },
       { new: true }
     );
-    res.status(200).json(expense);
+    res.status(200).json(income);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const deleteExpense = async (req, res) => {
+const deleteIncome = async (req, res) => {
   try {
-    const expense = await Expense.findByIdAndDelete(req.params.id);
-    if (!expense) return res.status(404).json({ message: "Expense not found" });
+    const income = await Income.findByIdAndDelete(req.params.id);
+    if (!income) return res.status(404).json({ message: "Expense not found" });
     res.status(200).json({ message: "Expense deleted." });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -131,11 +126,11 @@ const deleteExpense = async (req, res) => {
 };
 
 module.exports = {
-  createExpense,
-  updateExpense,
-  deleteExpense,
-  getExpense,
-  getExpenses,
-  getExpensesByAccount,
-  getExpensesByMonthAndYear,
+  createIncome,
+  updateIncome,
+  deleteIncome,
+  getIncome,
+  getIncomes,
+  getIncomesByAccount,
+  getIncomesByMonthAndYear,
 };

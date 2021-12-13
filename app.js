@@ -23,7 +23,9 @@ const accountRoutes = require("./src/routes/accountRoutes");
 app.use("/accounts", accountRoutes);
 
 const expenseRoutes = require("./src/routes/expenseRoutes");
+const incomeRoutes = require("./src/routes/incomeRoutes");
 app.use("/expenses", expenseRoutes);
+app.use("/", incomeRoutes);
 
 const PORT = process.env.PORT || 5000;
 
