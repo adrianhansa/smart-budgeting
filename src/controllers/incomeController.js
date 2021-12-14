@@ -1,4 +1,4 @@
-const Income = require("../models/Expense");
+const Income = require("../models/Income");
 
 const createIncome = async (req, res) => {
   try {
@@ -32,10 +32,7 @@ const createIncome = async (req, res) => {
 
 const getIncome = async (req, res) => {
   try {
-    const income = await Income.findById(req.params.id).populate(
-      "account",
-      "name"
-    );
+    const income = await Income.findById(req.params.id);
     if (!income) return res.status(404).json({ message: "Expense not found" });
     res.status(200).json(income);
   } catch (error) {
@@ -67,7 +64,6 @@ const getIncomesByMonthAndYear = async (req, res) => {
       .equals(year)
       .where("month")
       .equals(month)
-      .populate("account", ["name", "budget"])
       .populate("user", "name");
     res.status(200).json(incomes);
   } catch (error) {

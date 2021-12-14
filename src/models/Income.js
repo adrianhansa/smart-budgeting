@@ -14,4 +14,4 @@ const incomeSchema = new mongoose.Schema({
   year: { type: Number, required: true },
 });
 
-module.exports = mongoose.model("expenses", incomeSchema);
+module.exports = mongoose.model("incomes", incomeSchema);

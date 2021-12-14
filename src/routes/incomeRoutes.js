@@ -7,7 +7,7 @@ const {
   deleteIncome,
   getIncomesByAccount,
   getIncomesByMonthAndYear,
-} = require("../controllers/imcomesController");
+} = require("../controllers/incomeController");
 const auth = require("../middlewares/auth");
 
 router.post("/", auth, createIncome);
