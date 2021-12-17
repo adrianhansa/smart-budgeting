@@ -24,6 +24,7 @@ const createIncome = async (req, res) => {
       month: date.split("-")[1],
       year: date.split("-")[0],
     });
+
     res.status(200).json(income);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -88,7 +89,7 @@ const getIncomesByAccount = async (req, res) => {
 const updateIncome = async (req, res) => {
   try {
     const { amount, description, date, account } = req.body;
-    if (!amount || !description || !account || !date)
+    if (!amount || !description || !date)
       return res.status(400).json({ message: "Please complete all fields." });
     if (amount < 0)
       return res
