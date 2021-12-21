@@ -4,6 +4,7 @@ const cors = require("cors");
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const Event = require("./src/models/Event");
 
 const io = new Server(server, {
   cors: {
@@ -21,9 +22,14 @@ app.use(
 
 io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
-  socket.on("expense-created", (data) =>
-    socket.broadcast.emit("expense-created", data)
-  );
+  socket.on("expense-created", async (data) => {
+    await Event.create({
+      date: new Date(),
+      user: data.user.id,
+      description: `${data.user.name} recorded an expense of ${data.amount} as ${data.description} purchsed on ${data.date}.`,
+    });
+    socket.broadcast.emit("expense-created", data);
+  });
   socket.on("income-created", (data) =>
     socket.broadcast.emit("income-created", data)
   );
