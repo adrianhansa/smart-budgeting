@@ -9,6 +9,7 @@ const getEvents = async (req, res) => {
     }
     const events = await Event.find({
       household: req.user.household._id,
+      read: false,
     }).populate("user", "name");
     res.status(200).json(events);
   } catch (error) {
@@ -33,4 +34,25 @@ const deleteEvent = async (req, res) => {
   }
 };
 
-module.exports = { getEvents, deleteEvent };
+const archiveEvent = async (req, res) => {
+  try {
+    if (!req.user.isAdmin) {
+      return res.status(401).json({
+        message: "You are not authorized to archive this record.",
+      });
+    }
+    const event = await Event.findByIdAndUpdate(
+      req.params.id,
+      { read: true },
+      { new: true }
+    );
+    if (!event) {
+      return res.status(404).json(event);
+    }
+    res.status(200).json({ message: "Event archived" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getEvents, deleteEvent, archiveEvent };
