@@ -5,7 +5,7 @@ const addSaving = async (req, res) => {
     const { amount, month, year } = req.body;
     if (!amount || !month || !year)
       return res.status(400).json({ message: "All fields are required." });
-    const saving = await Saving({
+    const saving = await Saving.create({
       amount,
       month,
       year,
@@ -20,7 +20,35 @@ const addSaving = async (req, res) => {
 
 const getSaving = async (req, res) => {
   try {
-    const saving = await Saving.findById(req.params.id);
+    const saving = await Saving.findOne({
+      month: req.params.month,
+      year: req.params.year,
+      household: req.user.household._id,
+    }).populate("user", "name");
+    if (!saving) return res.status(404).json({ message: "Saving not found" });
+    res.status(200).json(saving);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const updateSaving = async (req, res) => {
+  try {
+    const saving = await Saving.findByIdAndUpdate(
+      req.params.id,
+      { amount },
+      { new: true }
+    ).populate("user", "name");
+    if (!saving) return res.status(404).json({ message: "Saving not found" });
+    res.status(200).json(saving);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteSaving = async (req, res) => {
+  try {
+    const saving = await Saving.findByIdAndDelete(req.params.id);
     if (!saving) return res.status(404).json({ message: "Saving not found" });
     res.status(200).json(saving);
   } catch (error) {
@@ -40,4 +68,10 @@ const getSavings = async (req, res) => {
   }
 };
 
-module.exports = { addSaving, getSavings, getSaving };
+module.exports = {
+  addSaving,
+  getSavings,
+  getSaving,
+  deleteSaving,
+  updateSaving,
+};

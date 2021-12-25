@@ -8,8 +8,8 @@ const savingSchema = new mongoose.Schema({
     ref: "households",
   },
   amount: { type: Number, required: true, default: 0.0 },
-  month: { type: Number, required: true },
-  year: { type: Number, required: true },
+  month: { type: String, required: true },
+  year: { type: String, required: true },
 });
 
 module.exports = mongoose.model("savings", savingSchema);
