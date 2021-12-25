@@ -2,11 +2,6 @@ const Event = require("../models/Event");
 
 const getEvents = async (req, res) => {
   try {
-    if (!req.user.isAdmin) {
-      return res.status(401).json({
-        message: "You are not authorized to retrieve this information.",
-      });
-    }
     const events = await Event.find({
       household: req.user.household._id,
       read: false,

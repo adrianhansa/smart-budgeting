@@ -21,7 +21,6 @@ app.use(
 );
 
 io.on("connection", (socket) => {
-  console.log("a user connected", socket.id);
   socket.on("expense-created", async (data) => {
     await Event.create({
       date: new Date(),
@@ -30,6 +29,7 @@ io.on("connection", (socket) => {
       description: `${data.user.name} recorded an expense of ${data.amount} as ${data.description} purchsed on ${data.date}.`,
     });
     socket.broadcast.emit("expense-created", data);
+    socket.emit("event-created");
   });
   socket.on("income-created", async (data) => {
     await Event.create({
@@ -39,6 +39,7 @@ io.on("connection", (socket) => {
       description: `${data.user.name} recorded the income of ${data.amount} as ${data.description} earned on ${data.date}.`,
     });
     socket.broadcast.emit("income-created", data);
+    socket.emit("event-created");
   });
   socket.on("expense-updated", async (data) => {
     socket.broadcast.emit("expense-updated", data);
@@ -48,6 +49,7 @@ io.on("connection", (socket) => {
       household: data.user.household._id,
       description: `${data.user.name} updated an expense of ${data.amount} as ${data.description} purchsed on ${data.date}.`,
     });
+    socket.emit("event-created");
   });
   socket.on("income-updated", async (data) => {
     socket.broadcast.emit("income-updated", data);
@@ -57,16 +59,20 @@ io.on("connection", (socket) => {
       household: data.user.household._id,
       description: `${data.user.name} updated the income of ${data.amount} as ${data.description} earned on ${data.date}.`,
     });
+    socket.emit("event-created");
   });
   socket.on("expense-deleted", async (data) => {
     socket.broadcast.emit("expense-deleted", data);
-    console.log(data.user);
     await Event.create({
       date: new Date(),
       user: data.user.id,
       household: data.user.household._id,
       description: `${data.user.name} deleted an expense of ${data.amount} as ${data.description} spent on ${data.date}.`,
     });
+    socket.emit("event-created");
+  });
+  socket.on("event-created", () => {
+    socket.emit("event-created");
   });
   socket.on("income-deleted", async (data) => {
     socket.broadcast.emit("income-deleted", data);
@@ -76,6 +82,7 @@ io.on("connection", (socket) => {
       household: data.user.household._id,
       description: `${data.user.name} deleted an income of ${data.amount} as ${data.description} earned on ${data.date}.`,
     });
+    socket.emit("event-created");
   });
 });
 
@@ -91,11 +98,13 @@ const accountRoutes = require("./src/routes/accountRoutes");
 const expenseRoutes = require("./src/routes/expenseRoutes");
 const incomeRoutes = require("./src/routes/incomeRoutes");
 const eventRoutes = require("./src/routes/eventRoutes");
+const savingRoutes = require("./src/routes/savingRoutes");
 app.use("/", userRoutes);
 app.use("/accounts", accountRoutes);
 app.use("/expenses", expenseRoutes);
 app.use("/income", incomeRoutes);
 app.use("/events", eventRoutes);
+app.use("/savings", savingRoutes);
 
 const PORT = process.env.PORT || 5000;
 
