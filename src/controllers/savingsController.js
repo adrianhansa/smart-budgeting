@@ -36,7 +36,7 @@ const updateSaving = async (req, res) => {
   try {
     const saving = await Saving.findByIdAndUpdate(
       req.params.id,
-      { amount },
+      { amount: req.body.amount },
       { new: true }
     ).populate("user", "name");
     if (!saving) return res.status(404).json({ message: "Saving not found" });
