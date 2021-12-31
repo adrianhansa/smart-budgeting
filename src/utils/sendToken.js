@@ -11,13 +11,26 @@ const sendToken = (user, statusCode, res) => {
     },
     process.env.JWT_SECRET
   );
-  res.status(statusCode).cookie("token", token, { httpOnly: true }).json({
-    id: user._id,
-    name: user.name,
-    isAdmin: user.isAdmin,
-    email: user.email,
-    household: user.household,
-  });
+  res
+    .status(statusCode)
+    .cookie("token", token, {
+      httpOnly: true,
+      sameSite:
+        process.env.NODE_ENV === "development"
+          ? "lax"
+          : process.env.NODE_ENV === "production" && "none",
+      secure:
+        process.env.NODE_ENV === "development"
+          ? false
+          : process.env.NODE_ENV === "production" && true,
+    })
+    .json({
+      id: user._id,
+      name: user.name,
+      isAdmin: user.isAdmin,
+      email: user.email,
+      household: user.household,
+    });
 };
 
 module.exports = sendToken;
