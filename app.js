@@ -8,14 +8,14 @@ const Event = require("./src/models/Event");
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://smart-budgeting.herokuapp.com"],
     credentials: true,
   },
 });
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://smart-budgeting.herokuapp.com"],
     credentials: true,
   })
 );
