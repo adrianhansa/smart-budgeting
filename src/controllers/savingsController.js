@@ -5,14 +5,27 @@ const addSaving = async (req, res) => {
     const { amount, month, year } = req.body;
     if (!amount || !month || !year)
       return res.status(400).json({ message: "All fields are required." });
-    const saving = await Saving.create({
-      amount,
+    //check if there is a recorded saving for the current month and year
+    const existingSaving = await Saving.findOne({
       month,
       year,
       user: req.user.id,
-      household: req.user.household._id,
     });
-    res.status(200).json(saving);
+    if (!existingSaving) {
+      const saving = await Saving.create({
+        amount,
+        month,
+        year,
+        user: req.user.id,
+        household: req.user.household._id,
+      });
+      res.status(200).json(saving);
+    } else {
+      //over write existing amount saved for the current month
+      existingSaving.amount = req.body.amount;
+      existingSaving.save();
+      return res.status(200).json(existingSaving);
+    }
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
