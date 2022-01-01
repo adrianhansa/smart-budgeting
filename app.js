@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
       household: data.user.household._id,
       description: `${data.user.name} recorded an expense of ${data.amount} as ${data.description} purchsed on ${data.date}.`,
     });
-    socket.broadcast.emit("expense-created", data);
+    socket.emit("expense-created", data);
     socket.emit("event-created");
   });
   socket.on("income-created", async (data) => {
@@ -38,11 +38,11 @@ io.on("connection", (socket) => {
       household: data.user.household._id,
       description: `${data.user.name} recorded the income of ${data.amount} as ${data.description} earned on ${data.date}.`,
     });
-    socket.broadcast.emit("income-created", data);
+    socket.emit("income-created", data);
     socket.emit("event-created");
   });
   socket.on("expense-updated", async (data) => {
-    socket.broadcast.emit("expense-updated", data);
+    socket.emit("expense-updated", data);
     await Event.create({
       date: new Date(),
       user: data.user.id,
@@ -52,7 +52,7 @@ io.on("connection", (socket) => {
     socket.emit("event-created");
   });
   socket.on("income-updated", async (data) => {
-    socket.broadcast.emit("income-updated", data);
+    socket.emit("income-updated", data);
     await Event.create({
       date: new Date(),
       user: data.user.id,
@@ -62,7 +62,7 @@ io.on("connection", (socket) => {
     socket.emit("event-created");
   });
   socket.on("expense-deleted", async (data) => {
-    socket.broadcast.emit("expense-deleted", data);
+    socket.emit("expense-deleted", data);
     await Event.create({
       date: new Date(),
       user: data.user.id,
@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
     socket.emit("event-created");
   });
   socket.on("income-deleted", async (data) => {
-    socket.broadcast.emit("income-deleted", data);
+    socket.emit("income-deleted", data);
     await Event.create({
       date: new Date(),
       user: data.user.id,
