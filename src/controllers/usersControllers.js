@@ -148,6 +148,25 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const toggleAdmin = async (req, res) => {
+  if (req.user.isAdmin) {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { isAdmin: req.body.isAdmin },
+      { new: true }
+    );
+    res.status(200).json(updatedUser);
+    try {
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  } else {
+    return res
+      .status(401)
+      .json({ message: "You are not authorized to perform this change." });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -156,4 +175,5 @@ module.exports = {
   addUser,
   deleteUser,
   getUsers,
+  toggleAdmin,
 };

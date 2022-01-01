@@ -7,6 +7,7 @@ const {
   addUser,
   deleteUser,
   getUsers,
+  toggleAdmin,
 } = require("../controllers/usersControllers");
 
 const auth = require("../middlewares/auth");
@@ -18,5 +19,6 @@ router.delete("/delete-account", deleteAccount);
 router.delete("/delete-user/:id", auth, deleteUser);
 router.get("/logout", logout);
 router.get("/users", auth, getUsers);
+router.put("/toggle-admin/:id", auth, toggleAdmin);
 
 module.exports = router;
