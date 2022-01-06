@@ -72,7 +72,8 @@ const getExpensesByMonthAndYear = async (req, res) => {
       .where("month")
       .equals(month)
       .populate("account", ["name", "budget"])
-      .populate("user", "name");
+      .populate("user", "name")
+      .sort("desc");
     res.status(200).json(expenses);
   } catch (error) {
     return res.status(500).json({ message: error.message });
