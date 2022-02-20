@@ -20,13 +20,11 @@ const userRoutes = require("./src/routes/userRoutes");
 const accountRoutes = require("./src/routes/accountRoutes");
 const expenseRoutes = require("./src/routes/expenseRoutes");
 const incomeRoutes = require("./src/routes/incomeRoutes");
-const eventRoutes = require("./src/routes/eventRoutes");
 const savingRoutes = require("./src/routes/savingRoutes");
 app.use("/", userRoutes);
 app.use("/accounts", accountRoutes);
 app.use("/expenses", expenseRoutes);
 app.use("/income", incomeRoutes);
-app.use("/events", eventRoutes);
 app.use("/savings", savingRoutes);
 
 const PORT = process.env.PORT || 5000;
