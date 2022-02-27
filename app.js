@@ -4,7 +4,7 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://ebudgeting.netlify.app"],
+    origin: ["http://localhost:3000", "https://smart-budgeting.netlify.app"],
     credentials: true,
   })
 );
